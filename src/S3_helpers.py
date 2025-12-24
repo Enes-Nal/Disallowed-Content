@@ -30,7 +30,7 @@ def update_user_data(data, unnallowed_words, words_said):
             data["word_counts"][word] = data["word_counts"].get(word,0) + 1 # the .get returns the value for [word] if it exists, otherwise returns 0.
             data["total_violations"] += 1
 
-    data["last_updated"] = datetime.now(ZoneInfo("America/Los_Angeles"))
+    data["last_updated"] = datetime.now(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d %I:%M %p %Z")
 
 
 def save_user_data(bucket, user_id, data):

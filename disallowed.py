@@ -1,19 +1,29 @@
 import discord
 import os
 from dotenv import load_dotenv
+from discord import app_commands
+
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
+# intents for the bot
 intents = discord.Intents.default()
 intents.message_content = True
-
 client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
 
+# list of bad words
+bad_words = []
+
+
+# checks if the bot is ready
 @client.event
 async def on_ready():
     print(f'Ready to detect some naughty words!')
 
+
+# detects if user sent message and compares the message to the list of bad words
 @client.event
 async def on_message(message):
 

@@ -1,3 +1,4 @@
+#All functions have been tested
 import boto3 #the AWS SDK for Python
 from botocore.exceptions import ClientError #boto exception
 import json
@@ -51,14 +52,14 @@ def get_all_user_data():
     '''
     return get_all_users_data_helper(bucket)
 
-def get_all_user_data_sorted_by_violations():
+def get_all_user_data_sorted_by_violations(reverse=True): 
     '''
     returns a list of all user data sorted by total violations
     '''
-    return get_all_users_data_sorted_by_violations_helper(bucket)
+    return get_all_users_data_sorted_by_violations_helper(bucket, reverse)
 
-def get_all_user_data_sorted_by_word(word):
+def get_all_user_data_sorted_by_word(word, reverse=True):
     '''
     returns a list of all user data sorted by a specific word
     '''
-    return get_all_users_data_sorted_by_word_helper(bucket, word)
+    return get_all_users_data_sorted_by_word_helper(bucket, word, reverse)

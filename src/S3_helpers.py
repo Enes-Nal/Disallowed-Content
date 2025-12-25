@@ -35,15 +35,15 @@ def get_all_users_data_helper(bucket):
     return all_data
 
 
-def get_all_users_data_sorted_by_violations_helper(bucket):
-    all_data = get_all_user_data_helper(bucket)
-    all_data.sort(key=lambda x: x["total_violations"], reverse=True)
+def get_all_users_data_sorted_by_violations_helper(bucket, reverse):
+    all_data = get_all_users_data_helper(bucket)
+    all_data.sort(key=lambda x: x["total_violations"], reverse=reverse)
     return all_data
 
 
-def get_all_users_data_sorted_by_word_helper(bucket, word):
-    all_data = get_all_user_data_helper(bucket)
-    all_data.sort(key=lambda x: x["word_counts"].get(word, 0), reverse=True)
+def get_all_users_data_sorted_by_word_helper(bucket, word, reverse):
+    all_data = get_all_users_data_helper(bucket)
+    all_data.sort(key=lambda x: x["word_counts"].get(word, 0), reverse=reverse)
     return all_data
 
 

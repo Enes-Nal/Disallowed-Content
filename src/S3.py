@@ -25,9 +25,7 @@ def process_new_message(user : str | int, unnallowed_words : tuple | list, words
     user_id = str(user)
 
     data = get_user_data_helper(user_id,bucket) #get user data and create user if empty
-
     update_user_data(data,unnallowed_words,words_said) #updates the data variable counters
-
     save_user_data(bucket,user_id,data) #saves data back into the S3 bucket
     
 
@@ -47,4 +45,20 @@ def get_user_data(user):
     '''
     return get_user_data_helper(str(user),bucket)
     
+def get_all_user_data():
+    '''
+    returns a list of all user data
+    '''
+    return get_all_users_data_helper(bucket)
 
+def get_all_user_data_sorted_by_violations():
+    '''
+    returns a list of all user data sorted by total violations
+    '''
+    return get_all_users_data_sorted_by_violations_helper(bucket)
+
+def get_all_user_data_sorted_by_word(word):
+    '''
+    returns a list of all user data sorted by a specific word
+    '''
+    return get_all_users_data_sorted_by_word_helper(bucket, word)

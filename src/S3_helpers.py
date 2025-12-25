@@ -24,6 +24,29 @@ def get_user_data_helper(user_id : str, bucket):
     
     return data
 
+
+def get_all_users_data_helper(bucket):
+    user_files = bucket.objects.filter(Prefix="users/")
+    all_data = []
+    for user_file in user_files:
+        response = user_file.get()
+        data = json.loads(response["Body"].read().decode("utf-8"))
+        all_data.append(data)
+    return all_data
+
+
+def get_all_users_data_sorted_by_violations_helper(bucket):
+    all_data = get_all_user_data_helper(bucket)
+    all_data.sort(key=lambda x: x["total_violations"], reverse=True)
+    return all_data
+
+
+def get_all_users_data_sorted_by_word_helper(bucket, word):
+    all_data = get_all_user_data_helper(bucket)
+    all_data.sort(key=lambda x: x["word_counts"].get(word, 0), reverse=True)
+    return all_data
+
+
 def update_user_data(data, unnallowed_words, words_said):
     for word in words_said:
         if word in unnallowed_words:

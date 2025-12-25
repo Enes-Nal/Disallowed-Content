@@ -32,6 +32,19 @@ def process_new_message(user : str | int, unnallowed_words : tuple | list, words
     
 
 def get_user_data(user):
+    '''
+    data format:
+    {
+        'user_id' : str(user),
+        'total_violations' : int,
+        'word_counts' : {
+            'word1' : int,
+            'word2' : int,
+            ...
+        },
+        'last_updated' : datetime
+    }
+    '''
     return get_user_data_helper(str(user),bucket)
     
 

@@ -1,5 +1,6 @@
 import discord
 import os
+import re
 from dotenv import load_dotenv
 from discord import app_commands
 import json
@@ -44,6 +45,49 @@ class MyClient(discord.Client):
 
     async def on_ready(self):
         print(f"Loaded {len(word_list)} words from file")
+
+    async def on_message(self, message: discord.Message):
+        # Ignore messages from bots to avoid infinite loops
+        if message.author.bot:
+            return
+        
+        # Ignore empty messages
+        if not message.content:
+            return
+        
+        # Check if message contains any bad words
+        message_lower = message.content.lower()
+        found_words = []
+        
+        # Check each word in the bad words list
+        for bad_word in word_list:
+            # Check if the bad word appears in the message (case-insensitive)
+            # Using word boundaries to match whole words only, slash b makes it so it doesnt match words including the word for example looking for "bad" it doesnt detect "badminton" only "bad!" or "bad." ect
+            pattern = r'\b' + re.escape(bad_word.lower()) + r'\b'
+            if re.search(pattern, message_lower):
+                found_words.append(bad_word)
+        
+        # If bad words were found, delete the message and warn the user
+        if found_words:
+            try:
+                await message.delete()
+                warning_msg = (
+                    f"⚠️ **Warning:** {message.author.mention}, your message was deleted because it contained "
+                    f"disallowed word(s): {', '.join(found_words)}"
+                )
+                try:
+                    await message.channel.send(warning_msg)
+                except discord.Forbidden:
+                    print(f"Warning: Bot doenst have perms")
+                except Exception as e:
+                    print(f"Error {e}")
+                
+            except discord.Forbidden:
+                print(f"Warning: Bot doesn't have delete perms ")
+            except discord.NotFound:
+                pass
+            except Exception as e:
+                print(f"Error handling {e}")
 
 client = MyClient(intents=intents)
 tree = client.tree

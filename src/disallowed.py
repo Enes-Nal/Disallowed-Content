@@ -202,15 +202,13 @@ async def listwords(interaction: discord.Interaction):
 
 @tree.command(name="leaderboard", description="Shows the leaderboard of the worst users")
 async def listwords(interaction: discord.Interaction):
-
     user_data = get_all_user_data_sorted_by_violations()[:2]
     
     embed = Embed(title="Leaderboard", description="Top 5 Naughty Users", color=0xff0000)
-    for user in user_data:
+    for i, user in enumerate(user_data, start=1):
         
-        embed.add_field(name=f'<@{user['user_id']}>', value=f"Violations: {user["total_violations"]}", inline=False)
-
+        embed.add_field(name=f"#{i}", 
+                        value=f"<@{user['user_id']}> - Violations: {user['total_violations']}", 
+                        inline=False)
     await interaction.response.send_message(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
-
-
 client.run(DISCORD_TOKEN)

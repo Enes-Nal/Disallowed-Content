@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from discord import app_commands
 import json
 from S3 import process_new_message, get_all_user_data_sorted_by_violations
+from discord import Embed
+
 
 DATA_FILE = "word_list.json"
 # Load word list from file
@@ -201,7 +203,14 @@ async def listwords(interaction: discord.Interaction):
 @tree.command(name="leaderboard", description="Shows the leaderboard of the worst users")
 async def listwords(interaction: discord.Interaction):
 
-    user = get_all_user_data_sorted_by_violations()
+    user_data = get_all_user_data_sorted_by_violations()[:2]
+    
+    embed = Embed(title="Leaderboard", description="Top 5 Naughty Users", color=0xff0000)
+    for user in user_data:
+        
+        embed.add_field(name=f'<@{user['user_id']}>', value=f"Violations: {user["total_violations"]}", inline=False)
+
+    await interaction.response.send_message(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
 
 client.run(DISCORD_TOKEN)

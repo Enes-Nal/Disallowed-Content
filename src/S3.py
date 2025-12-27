@@ -63,3 +63,4 @@ def get_all_user_data_sorted_by_word(word, reverse=True):
     returns a list of all user data sorted by a specific word
     '''
     return get_all_users_data_sorted_by_word_helper(bucket, word, reverse)
+

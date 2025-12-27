@@ -4,6 +4,7 @@ import re
 from dotenv import load_dotenv
 from discord import app_commands
 import json
+from S3 import process_new_message, get_all_user_data_sorted_by_violations
 
 DATA_FILE = "word_list.json"
 # Load word list from file
@@ -77,6 +78,7 @@ class MyClient(discord.Client):
                 )
                 try:
                     await message.channel.send(warning_msg)
+                    process_new_message(message.author.id, word_list, found_words) # saves new message into S3 for given user 
                 except discord.Forbidden:
                     print(f"Warning: Bot doenst have perms")
                 except Exception as e:
@@ -194,5 +196,12 @@ async def listwords(interaction: discord.Interaction):
         f"{words_text}",
         ephemeral=True
     )
+
+
+@tree.command(name="leaderboard", description="Shows the leaderboard of the worst users")
+async def listwords(interaction: discord.Interaction):
+
+    user = get_all_user_data_sorted_by_violations()
+
 
 client.run(DISCORD_TOKEN)

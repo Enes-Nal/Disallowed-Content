@@ -24,7 +24,7 @@ A Discord bot that automatically monitors and filters messages containing disall
 
 2. **Install required dependencies:**
    ```bash
-   pip install discord.py python-dotenv
+   pip install discord.py python-dotenv boto3
    ```
 
 
@@ -33,9 +33,11 @@ A Discord bot that automatically monitors and filters messages containing disall
    Create a `.env` file in the project root directory:
    ```env
    DISCORD_TOKEN=your_bot_token_here
+   S3_BUCKET=your_S3_bucket
    ```
    
    Replace `your_bot_token_here` with your actual Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications).
+   Replace `your_S3_bucket` with your S3 bucket from [AWS](https://aws.amazon.com/s3/).
 
 ## Configuration
 
@@ -136,6 +138,8 @@ Remove ALL words from the disallowed words list.
 Disallowed-Content/
 ├── src/
 │   ├── disallowed.py      # Main bot code
+│   ├── S3_helpers.py      # Helper functions for easier readability in S3.py
+│   ├── S3.py              # Holds the S3 function called by disallowed.py
 │   └── word_list.json     # Stores the disallowed words (auto-generated)
 ├── .env                   # Your bot token (create this file)
 ├── README.md              # This file

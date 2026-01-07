@@ -4,7 +4,7 @@ import re
 from dotenv import load_dotenv
 from discord import app_commands
 import json
-from S3 import process_new_message, get_all_user_data_sorted_by_violations
+from S3 import process_new_message, get_all_user_data_sorted_by_violations, get_all_user_data_sorted_by_word
 from discord import Embed
 
 
@@ -32,7 +32,7 @@ DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.message_content = True
 
-GUILD_ID = 1451076729929207810  #server ID
+GUILD_ID = 1361196924686045265  #server ID
 
 class MyClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -44,7 +44,9 @@ class MyClient(discord.Client):
         guild = discord.Object(id=GUILD_ID)
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
-        print(f"Commands synced to guild {GUILD_ID}")
+        # Also sync globally to ensure consistency
+        await self.tree.sync()
+        print(f"Commands synced to guild {GUILD_ID} and globally")
 
     async def on_ready(self):
         print(f"Loaded {len(word_list)} words from file")
@@ -201,14 +203,21 @@ async def listwords(interaction: discord.Interaction):
 
 
 @tree.command(name="leaderboard", description="Shows the leaderboard of the worst users")
-async def listwords(interaction: discord.Interaction):
-    user_data = get_all_user_data_sorted_by_violations()[:2]
-    
-    embed = Embed(title="Leaderboard", description="Top 5 Naughty Users", color=0xff0000)
-    for i, user in enumerate(user_data, start=1):
-        
-        embed.add_field(name=f"#{i}", 
-                        value=f"<@{user['user_id']}> - Violations: {user['total_violations']}", 
-                        inline=False)
+@app_commands.describe(word="Optional: Filter leaderboard by a specific word")
+async def leaderboard(interaction: discord.Interaction, word: str = None):
+    if word:
+        word = word.strip().lower()
+        user_data = get_all_user_data_sorted_by_word(word)[:5]
+        embed = Embed(title="Leaderboard", description=f"Top 5 Naughty Users for '{word}'", color=0x4287f5)
+        for i, user in enumerate(user_data, start=1):
+            word_count = user['word_counts'].get(word, 0)
+            embed.add_field(name=f"", value=f"{i}. <@{user['user_id']}> Violations 👉 {word_count}", 
+                            inline=False)
+    else:
+        user_data = get_all_user_data_sorted_by_violations()[:5]
+        embed = Embed(title="Leaderboard", description="Top 5 Naughty Users", color=0x4287f5)
+        for i, user in enumerate(user_data, start=1):
+            embed.add_field(name=f"", value=f"{i}. <@{user['user_id']}> Violations 👉 {user['total_violations']}", 
+                            inline=False)
     await interaction.response.send_message(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 client.run(DISCORD_TOKEN)

@@ -64,3 +64,27 @@ def get_all_user_data_sorted_by_word(word, reverse=True):
     '''
     return get_all_users_data_sorted_by_word_helper(bucket, word, reverse)
 
+def remove_word_from_all_users(word):
+    '''
+    removes a specific word from all user data
+    '''
+    all_users = get_all_users_data_helper(bucket)
+    for user_data in all_users:
+        user_id = user_data['user_id']
+        if word in user_data['word_counts']:
+            word_count = user_data['word_counts'][word]
+            del user_data['word_counts'][word]
+            user_data['total_violations'] -= word_count
+            save_user_data(bucket,user_id,user_data)
+
+def delete_all_words_from_users():
+    '''
+    removes all words from all user data
+    '''
+    all_users = get_all_users_data_helper(bucket)
+    for user_data in all_users:
+        user_id = user_data['user_id']
+        user_data['word_counts'] = {}
+        user_data['total_violations'] = 0
+        save_user_data(bucket,user_id,user_data)
+    

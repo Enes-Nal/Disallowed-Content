@@ -4,11 +4,12 @@ import re
 from dotenv import load_dotenv
 from discord import app_commands
 import json
-from S3 import process_new_message, get_all_user_data_sorted_by_violations, get_all_user_data_sorted_by_word
+from S3 import process_new_message, get_all_user_data_sorted_by_violations, get_all_user_data_sorted_by_word, \
+    remove_word_from_all_users, delete_all_words_from_users
 from discord import Embed
 
 
-DATA_FILE = "word_list.json"
+DATA_FILE = "src/word_list.json"
 # Load word list from file
 def load_words():
     if os.path.exists(DATA_FILE):
@@ -124,8 +125,10 @@ async def addword(interaction: discord.Interaction, words: str):
     response = []
     if added:
         response.append(f"✅ Added: {', '.join(added)}")
+        print(f"Added words: {', '.join(added)}")
     if skipped:
         response.append(f"⚠️ Already existed: {', '.join(skipped)}")
+        print(f"Skipped existing words: {', '.join(skipped)}")
 
     if not response:
         response.append("No valid words were provided.")
@@ -146,11 +149,13 @@ async def clearwords(interaction: discord.Interaction):
 
     count = len(word_list)  # Get count before clearing
     word_list.clear()   # removes everything from the list
+    delete_all_words_from_users()  #resets all the user data in S3 back to empty/0
     save_words(word_list) #saves the new empty list
     await interaction.response.send_message(
         f"Cleared all words ({count} words removed)",
         ephemeral=True
     )
+    print("all words cleared")
 @tree.command(name="removeword", description="Remove one or more words from the list")
 @app_commands.describe(words="Enter words separated by spaces or commas")
 async def removeword(interaction: discord.Interaction, words: str):
@@ -164,6 +169,7 @@ async def removeword(interaction: discord.Interaction, words: str):
             continue
 
         if word in word_list:
+            remove_word_from_all_users(word)  #remove the word from all users in the S3
             word_list.remove(word)
             removed.append(word)
         else:
@@ -175,8 +181,10 @@ async def removeword(interaction: discord.Interaction, words: str):
     response = []
     if removed:
         response.append(f"🗑️ Removed: {', '.join(removed)}")
+        print(f"Removed words: {', '.join(removed)}")
     if not_found:
         response.append(f"❌ Not found: {', '.join(not_found)}")
+        print(f"Words not found: {', '.join(not_found)}")
 
     if not response:
         response.append("No valid words were provided.")
@@ -195,11 +203,12 @@ async def listwords(interaction: discord.Interaction):
         )
         return
     words_text = ", ".join(word_list)
-    for word in word_list:
-        await interaction.response.send_message(
-        f"{words_text}",
-        ephemeral=True
+    
+    await interaction.response.send_message(
+    f"{words_text}",
+    ephemeral=True
     )
+    print("listed words")
 
 
 @tree.command(name="leaderboard", description="Shows the leaderboard of the worst users")
@@ -220,4 +229,5 @@ async def leaderboard(interaction: discord.Interaction, word: str = None):
             embed.add_field(name=f"", value=f"{i}. <@{user['user_id']}> Violations 👉 {user['total_violations']}", 
                             inline=False)
     await interaction.response.send_message(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
+    print("leaderboard displayed")
 client.run(DISCORD_TOKEN)

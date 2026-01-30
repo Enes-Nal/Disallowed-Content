@@ -1,4 +1,4 @@
-![Disallowed Content](https://cdn.discordapp.com/attachments/1451076730792968364/1466597195762368532/cNGO1Ij.png?ex=697d5293&is=697c0113&hm=01416221af5be331d091b339d863a148fe7c7097fc73731c4d545f07660cd1b1&animated=true)
+![Disallowed Content](https://cdn.discordapp.com/attachments/1451076730792968364/1466599937725825239/NH6Jf6T.png?ex=697d5521&is=697c03a1&hm=f618be3e619586ce48a1a4d5003cf994e19b39a4b3861280423637f5c21169e6&animated=true)
 
 A Discord bot that automatically monitors and filters messages containing disallowed words. The bot deletes messages with prohibited content and warns users, helping maintain a clean and appropriate chat environment.
 
